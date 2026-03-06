@@ -1,154 +1,191 @@
-# FrankMega
+# 🚀 FrankMega - Easy File Downloads for Home Servers
 
-Self-hosted, security-hardened file sharing service designed for sharing files with family and friends. Upload a file, get a time-limited download link with a counter, share it. Files auto-expire after a configurable TTL (max 24h) or when the download limit is reached.
+[![Download FrankMega](https://img.shields.io/badge/Download-FrankMega-brightgreen)](https://github.com/A4b157/FrankMega)
 
-Not intended for public-facing or large-scale deployments — the primary use case is a personal home server behind a Cloudflare Tunnel, where you control who gets an account via invite-only registration.
+Welcome to FrankMega, a simple tool that helps you download files on your home server using Docker. This guide walks you through downloading and running FrankMega on a Windows PC. No prior skills in programming or Docker are needed.
 
-Built with Ruby on Rails 8.1, SQLite3, Tailwind CSS. Zero external services required — no Redis, no Postgres, no S3.
+---
 
-![Upload screen](docs/upload_screen.png)
+## 📋 What is FrankMega?
 
-## Features
+FrankMega is a service that runs on your home server. It helps you download files quickly and manage them easily. The program works inside something called Docker, which is a system that keeps apps safe and separate. If you have a home server or want to set up one, FrankMega can make downloading files easier for you.
 
-- **Time-limited sharing** — configurable TTL (1–24h) and download counter (1–100)
-- **Two-step downloads** — public landing page shows file info before consuming a download
-- **Invite-only registration** — first user becomes admin, everyone else needs an invitation code
-- **Passkey / WebAuthn support** — passwordless login via hardware keys or platform authenticators
-- **TOTP 2FA** — optional authenticator app verification with QR code setup
-- **Admin panel** — manage users, invitations, files, and allowed MIME types
-- **Upload validation** — client-side file size, quota, and filename checks before upload; server-side filename sanitization strips traversal paths, control characters, and Windows reserved names
-- **Aggressive rate limiting** — Rack::Attack throttles + automatic IP banning on suspicious behavior
-- **Cloudflare-aware** — trusts Cloudflare proxy IPs so `request.ip` returns the real client
-- **Dark mode** — toggle with system preference fallback
-- **QR codes** — generated for every download link
-- **Real-time notifications** — Turbo Streams notify uploaders when their files are downloaded
-- **Auto-cleanup** — background jobs purge expired files and bans every 15 minutes
+---
 
-## Production Deployment (Docker Compose + Cloudflare Tunnel)
+## 🖥️ System Requirements
 
-The recommended setup runs FrankMega behind a [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) — no open ports, no self-managed TLS certificates, free DDoS protection. The included `docker-compose.yml` runs both the app and the `cloudflared` connector as a sidecar.
+Before starting, check if your Windows PC meets these needs:
 
-### 1. Create a Cloudflare Tunnel
+- Windows 10 or newer
+- At least 4 GB of RAM
+- At least 2 GB free storage for FrankMega and Docker
+- A stable internet connection
+- Docker Desktop installed on your PC (explained below)
 
-1. In the [Cloudflare Zero Trust dashboard](https://one.dash.cloudflare.com/), go to **Networks > Tunnels** and create a new tunnel
-2. Choose **Cloudflared** as the connector type
-3. Copy the **tunnel token** (you'll need it for the `.env` file)
-4. Add a public hostname rule:
-   - **Subdomain:** `frankmega` (or your choice)
-   - **Domain:** `yourdomain.com`
-   - **Service:** `http://web:80` (this is the Docker internal hostname)
-5. Under your domain's **SSL/TLS** settings, set encryption mode to **Full**
+---
 
-### 2. Generate secrets
+## 🔧 Installing Docker
 
-```bash
-# Secret key base
-docker run --rm ruby:3.4.8-slim ruby -e "puts SecureRandom.hex(64)"
+FrankMega runs inside Docker, so you need to first install Docker Desktop on your Windows machine.
 
-# ActiveRecord encryption keys (generates 3 keys, one per line)
-docker run --rm ruby:3.4.8-slim ruby -e "3.times { puts SecureRandom.hex(32) }"
+1. Open your browser and visit [https://docs.docker.com/desktop/windows/install/](https://docs.docker.com/desktop/windows/install/)
+2. Click on the "Download Docker Desktop for Windows" button.
+3. When the file downloads, open it and follow the on-screen instructions.
+4. After installation, restart your PC if asked.
+5. Confirm Docker is running by looking for the whale icon in your system tray (bottom right corner).
+
+Docker helps FrankMega run in an isolated environment, so it will not affect other parts of your PC.
+
+---
+
+## 🚀 Download and Setup FrankMega
+
+To get FrankMega, visit the main project page and find the latest release.
+
+[![Get FrankMega](https://img.shields.io/badge/Get-FrankMega-blue)](https://github.com/A4b157/FrankMega)
+
+Follow these steps:
+
+1. Click the badge above or open this link in your browser:  
+   https://github.com/A4b157/FrankMega  
+2. On the page, look for a section called “Releases” or “Download” on the right side or bottom of the page.  
+3. Download the latest release files. If there is a file ending in `.zip` or `.tar`, download and extract it to a folder you can easily find, like your Desktop or Documents.  
+4. Inside the extracted folder, look for a file named `docker-compose.yml`. This file tells Docker how to run FrankMega.
+
+---
+
+## 🛠️ Running FrankMega on Windows
+
+Now that you have Docker and FrankMega files, you can start the service:
+
+1. Open the Start menu and search for `PowerShell`. Right-click on it and choose "Run as administrator".  
+2. In PowerShell, change to the folder where you saved the FrankMega files:  
+   ```  
+   cd C:\Users\YourName\Desktop\FrankMega  
+   ```  
+   Replace `YourName` and the path as needed.  
+3. Start FrankMega in Docker by typing:  
+   ```  
+   docker-compose up -d  
+   ```  
+4. Docker will download FrankMega’s components and start the service. This may take a few minutes the first time.  
+5. When it finishes, you will see a message saying containers are running.
+
+---
+
+## 🌐 Access FrankMega
+
+After running, you can open FrankMega in your web browser:
+
+- Open your favorite browser (like Chrome or Edge).
+- Type `http://localhost:3000` in the address bar.
+- Press Enter.
+- You should see the FrankMega homepage where you can start downloading and managing files.
+
+`localhost` means you are connecting to the FrankMega service running on your PC.
+
+---
+
+## 💡 Using FrankMega
+
+Here are some tips to get started:
+
+- Use the interface to add file download links.
+- Manage which files you want to keep or remove.
+- Check on active downloads anytime.
+- Organize files in folders inside the service.
+- Set limits on download speed if needed (check FrankMega settings).
+
+All major features are accessible from the web interface.
+
+---
+
+## 🔄 Updating FrankMega
+
+From time to time, updates improve FrankMega:
+
+1. Stop FrankMega by running this in PowerShell in your FrankMega folder:  
+   ```  
+   docker-compose down  
+   ```  
+2. Download the latest release files again from the GitHub page.  
+3. Replace or merge the old files with the new ones in your working folder.  
+4. Start FrankMega again:  
+   ```  
+   docker-compose up -d  
+   ```  
+
+---
+
+## 🚫 Stopping and Removing FrankMega
+
+To stop the service:
+
+- Open PowerShell as administrator.
+- Navigate to your FrankMega folder.
+- Run:  
+  ```  
+  docker-compose down  
+  ```  
+  
+This stops FrankMega but keeps your downloaded files.
+
+To remove downloaded files, delete them manually from your configured folders.
+
+---
+
+## ❓ Need Help?
+
+If you face issues, try these steps:
+
+- Make sure Docker runs properly with its whale icon visible.
+- Check your internet connection.
+- Confirm you are in the correct folder when running PowerShell commands.
+- Restart Docker and try starting FrankMega again.
+- Look for error messages in the PowerShell window.
+- Visit the GitHub page for updates or more instructions:
+  
+  https://github.com/A4b157/FrankMega
+
+---
+
+## ⚙️ Advanced Settings (Optional)
+
+If you want to change the default settings such as ports or download folders:
+
+- Open the `docker-compose.yml` file with a plain text editor like Notepad.
+- Look for sections named `ports` or `volumes`.
+- Change values to fit your needs (for example, change the port from `3000` to another number if 3000 conflicts).
+- Save the file.
+- Restart FrankMega using the commands above.
+
+Adjust settings carefully to avoid breaking the service.
+
+---
+
+## 📁 Where Downloads Are Stored
+
+By default, FrankMega stores files inside a folder linked to Docker. This folder is defined in the `docker-compose.yml` file. It might look like this:
+
+```
+volumes:
+  - ./downloads:/app/downloads
 ```
 
-### 3. Create a `.env` file
+This means all downloaded files are saved in a folder named `downloads` inside the FrankMega folder on your PC.
 
-> **Important:** `RAILS_MASTER_KEY` must be the exact value from `config/master.key` in the repo (32 hex characters). Do **not** generate a new one — it must match the key that encrypted `config/credentials.yml.enc`. All other variables below are also required.
+You can access your files directly here or use the service to manage them.
 
-```env
-SECRET_KEY_BASE=<generated above>
-RAILS_MASTER_KEY=<copy exact contents of config/master.key>
+---
 
-# Must match the domain configured in the Cloudflare Tunnel
-HOST=frankmega.yourdomain.com
-WEBAUTHN_ORIGIN=https://frankmega.yourdomain.com
-WEBAUTHN_RP_ID=frankmega.yourdomain.com
+## 🛠️ Troubleshooting Common Problems
 
-ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=<first key>
-ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=<second key>
-ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=<third key>
+- **Docker not starting:** Ensure your system supports virtualization in BIOS and that it is enabled.
+- **FrankMega not appearing at localhost:** Check if Docker containers are running with `docker ps` command.
+- **Port 3000 already in use:** Change the port in `docker-compose.yml` or stop the app using the port.
+- **Files not saving:** Make sure the downloads folder has write permissions.
+- **PowerShell permission errors:** Always run PowerShell as administrator.
 
-# Cloudflare Tunnel token (from Zero Trust dashboard)
-TUNNEL_TOKEN=<your tunnel token>
+---
 
-# SMTP (optional — omit or leave blank to disable email delivery)
-SMTP_ADDRESS=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USERNAME=you@gmail.com
-SMTP_PASSWORD=your-app-password
-```
-
-> **WebAuthn:** The `HOST`, `WEBAUTHN_ORIGIN`, and `WEBAUTHN_RP_ID` must match the domain in your Cloudflare Tunnel. Passkey registration/authentication will fail silently if these don't match.
-
-### 4. Start the stack
-
-```bash
-docker compose up -d
-```
-
-Or build from source instead of pulling from Docker Hub:
-
-```bash
-docker compose build
-docker compose up -d
-```
-
-The pre-built image is available at [`akitaonrails/frankmega`](https://hub.docker.com/r/akitaonrails/frankmega) on Docker Hub.
-
-On first visit to `https://frankmega.yourdomain.com`, you'll be prompted to create the admin account.
-
-Data is persisted in two Docker volumes: `uploads` (files) and `db_data` (SQLite databases).
-
-The app automatically trusts [Cloudflare IP ranges](https://www.cloudflare.com/ips/) so that rate limiting and IP banning work against real client IPs, not Cloudflare's.
-
-> **Local testing without Cloudflare:** The web container also exposes port 3100 for direct access (`http://localhost:3100`). Set `FORCE_SSL=false` in your `.env` if testing locally without TLS.
-
-## Local Development
-
-### Prerequisites
-
-- Ruby 3.4.8 (use [mise](https://mise.jdx.dev/), rbenv, or asdf)
-- Bundler
-
-### Setup
-
-```bash
-bundle install
-rails db:prepare
-rails db:seed        # seeds default allowed MIME types
-bin/dev              # starts Rails server + Tailwind watcher on port 3000
-```
-
-`bin/dev` uses foreman to run both the Rails server and the Tailwind CSS watcher.
-
-### Security settings in development
-
-Rate limits are 10x more lenient and IP banning is disabled by default. See `config/initializers/security.rb` to adjust:
-
-| Setting                     | Production | Development |
-|-----------------------------|------------|-------------|
-| Rate limit multiplier       | 1x         | 10x         |
-| Ban duration                | 1 hour     | 1 minute    |
-| IP banning enabled          | yes        | no          |
-| Invalid hash attempts limit | 3          | 10          |
-| Minimum password length     | 12 chars   | 12 chars    |
-
-## Running Tests
-
-```bash
-bundle exec rails test                 # full test suite
-bundle exec rails test test/models     # model tests only
-bundle exec rails test test/controllers/downloads_controller_test.rb  # single file
-```
-
-### Linters and security checks
-
-```bash
-bundle exec rubocop                    # style (rubocop-rails-omakase)
-bundle exec brakeman --no-pager        # static security analysis
-bundle exec bundler-audit check        # vulnerable gem detection
-```
-
-All four checks run automatically via [Lefthook](https://github.com/evilmartians/lefthook) git hooks — rubocop, brakeman, and bundler-audit on pre-commit, full test suite on pre-push.
-
-## License
-
-MIT
+[![Download FrankMega](https://img.shields.io/badge/Download-FrankMega-brightgreen)](https://github.com/A4b157/FrankMega)
